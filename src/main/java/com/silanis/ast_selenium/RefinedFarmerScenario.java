@@ -4,6 +4,8 @@ import static com.silanis.ast_selenium.utils.TestContext.click;
 import static com.silanis.ast_selenium.utils.TestContext.init;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,26 +18,53 @@ import org.testng.annotations.Test;
 public class RefinedFarmerScenario {
 
 	// wait for the page loaded, seconds
-	private String baseUrl = "http://50.16.136.41:8080/farmersr5/";
+//	private String baseUrl = "http://50.16.136.41:8080/farmersr5/";
 
+	// Product node1
+//	private String baseUrl = "http://50.17.36.83:8080/farmersr5/";
+
+	//product node2
+//	private String baseUrl = "http://50.17.78.140:8080/farmersr5/";
+	
+	//load balancer
+	private String baseUrl = "http://50.19.253.112/farmersr5/";
+
+	//accelerate 
+//	private String baseUrl = "http://50.17.78.140:8080/farmersr5/";
+
+	private int finished= 0;
+	private int total= 100;
+	boolean totalTestEnabled=true;
+	
+	StopWatch totalfinishedStopWatch = new Log4JStopWatch();
+	
 	@Test(threadPoolSize = 100, invocationCount = 1, timeOut = 1000000000)
 	public void runTest() throws Exception {
+	   
+		totalfinishedStopWatch.start();
 		// testAwspp(3, 10);
-		testFarmerHtmlUtil(100);
-		Thread.sleep(1000);
+		//testFarmerHtmlUtil(100);
+		testFarmerFireFox(10000);
 	}
 
 	public void testFarmerFireFox(int times) throws InterruptedException {
 		init();
+		int i=0;
 		String message1 = Thread.currentThread().getName() + " loop:(%d/%d)";
 
 		StopWatch stopWatch = new Log4JStopWatch();
 		WebDriver driver = new FirefoxDriver();
 		// HtmlUnitDriver driver = new HtmlUnitDriver(true);
 		for (int j = 0; j < times; j++) {
+			
+			StopWatch totalStopWatch = new Log4JStopWatch();
 			String message = String.format(message1, j, times);
 			System.out.println(message);
+			
 			driver.get(baseUrl);
+			
+			driver.findElement(By.xpath("//input[@type='button'][@value='Create and Resume']"));
+			driver.manage().timeouts().implicitlyWait(500, TimeUnit.SECONDS);
 			
 			WebElement createAndResumeButton = click(
 					"1:testpage",
@@ -80,7 +109,24 @@ public class RefinedFarmerScenario {
 			WebElement exitButton = click("9:exit", message, driver,
 					submitButton, By.id("aws_adaptedDownloadPage_continue"));
 			exitButton.click();
-
+			totalStopWatch.stop("Total");
+	        
+			if (totalTestEnabled){
+				
+				synchronized(this)
+				{
+				  finished++;
+                  if (finished >= total)	
+                  {
+                	  totalfinishedStopWatch.stop("Finish(" + total +")" , "Finish  " + finished + " transaction "  );
+                	  totalfinishedStopWatch.start();
+                	  finished=0;
+                  }
+				  
+				}
+				
+			}
+			
 		}
 		driver.close();
 	}
@@ -109,6 +155,8 @@ public class RefinedFarmerScenario {
 			
 			login(driver);
 
+			System.out.println(driver.getPageSource());
+			
 			WebElement acceptButton = click("3:login", message, driver,
 					loginButton, By.id("aws_acceptPage_accept"));
 
