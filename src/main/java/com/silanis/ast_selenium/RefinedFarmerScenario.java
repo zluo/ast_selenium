@@ -27,24 +27,28 @@ public class RefinedFarmerScenario {
 //	private String baseUrl = "http://50.17.78.140:8080/farmersr5/";
 	
 	//load balancer
-	private String baseUrl = "http://50.19.253.112/farmersr5/";
+//	private String baseUrl = "http://50.17.206.129/farmersr5/";
 
 	//accelerate 
 //	private String baseUrl = "http://50.17.78.140:8080/farmersr5/";
 
+// manually load balance
+	private String[] baseUrls = {"http://50.17.75.15:8080/farmersr5/","http://50.19.71.43:8080/farmersr5/"};
+
+	
 	private int finished= 0;
 	private int total= 100;
 	boolean totalTestEnabled=true;
 	
 	StopWatch totalfinishedStopWatch = new Log4JStopWatch();
 	
-	@Test(threadPoolSize = 100, invocationCount = 1, timeOut = 1000000000)
+	@Test(threadPoolSize = 100, invocationCount = 	10, timeOut = 1000000000)
 	public void runTest() throws Exception {
 	   
 		totalfinishedStopWatch.start();
 		// testAwspp(3, 10);
 		//testFarmerHtmlUtil(100);
-		testFarmerFireFox(10000);
+		testFarmerFireFox(100);
 	}
 
 	public void testFarmerFireFox(int times) throws InterruptedException {
@@ -61,7 +65,8 @@ public class RefinedFarmerScenario {
 			String message = String.format(message1, j, times);
 			System.out.println(message);
 			
-			driver.get(baseUrl);
+			System.out.println(baseUrls[j%2]);
+			driver.get(baseUrls[j%2]);
 			
 			driver.findElement(By.xpath("//input[@type='button'][@value='Create and Resume']"));
 			driver.manage().timeouts().implicitlyWait(500, TimeUnit.SECONDS);
@@ -141,7 +146,7 @@ public class RefinedFarmerScenario {
 		for (int j = 0; j < times; j++) {
 			String message = String.format(message1, j, times);
 			System.out.println(message);
-			driver.get(baseUrl);
+			//driver.get(baseUrl);
 			
 			WebElement createAndResumeButton = click(
 					"1:testpage",
@@ -192,9 +197,6 @@ public class RefinedFarmerScenario {
 		}
 		driver.close();
 	}
-
-	
-	
 	
 	private void login(WebDriver driver) {
 

@@ -21,14 +21,14 @@ import org.perf4j.log4j.Log4JStopWatch;
 public class TestContext {
 	private static Random random = new Random();
 	private static int randamDelay = 1000;
-	private static int initDelay = 1000;
+	private static int initDelay = 10000;
 	private static int i = 1;
 	private static int waitTimeout = 500;
 
 	public static WebElement click(String tag, String message, WebDriver driver,
 			WebElement input, By validateElement, By findElement) {
-		StopWatch stopWatch = new Log4JStopWatch();
 		randomDelay();
+		StopWatch stopWatch = new Log4JStopWatch();
 		stopWatch.start();
 		input.click();
 		driver.findElement(validateElement);

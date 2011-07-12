@@ -29,10 +29,10 @@ public class SoapProxySimulator {
 	private static int i =1;
 	private static Random random = new Random();
     
-	@Test(threadPoolSize = 100, invocationCount = 100, timeOut = 1000000000)
+	@Test(threadPoolSize = 100, invocationCount = 1, timeOut = 1000000000)
 	public void runTest() throws Exception {
 //		testAwspp(3, 10);
-//		testAwsppWebDriver(3, 10);
+//		testAwsppWebDriver(30, 10);
 		testAwsppHtmlUtil(3, 100);
 		Thread.sleep(1000);
 	}
@@ -70,6 +70,13 @@ public class SoapProxySimulator {
 			driver.get(baseUrl);
 			driver.manage().timeouts().implicitlyWait(waitTimeout, TimeUnit.SECONDS);  
 			// create/resume transaction 
+			
+
+			WebElement docs_input =driver.findElement(By.id("create_docs_1")); 
+			driver.manage().timeouts().implicitlyWait(waitTimeout, TimeUnit.SECONDS); 
+			docs_input.clear();
+			docs_input.sendKeys("" + docs);
+			
 			WebElement createButton =driver.findElement(By.id("resume")); 
 			driver.manage().timeouts().implicitlyWait(waitTimeout, TimeUnit.SECONDS);  
 			createButton.click();
@@ -98,11 +105,11 @@ public class SoapProxySimulator {
 		String message =Thread.currentThread().getName() + " loop:(%d/%d), docs(%d/%d) ";
 		String message1 =Thread.currentThread().getName() + " loop:(%d/%d)";
 		
-		StopWatch stopWatch = new Log4JStopWatch();
 		
 		HtmlUnitDriver driver = new HtmlUnitDriver(true);
 		for (int j = 0; j < times; j++) {
 			
+			StopWatch stopWatch = new Log4JStopWatch();
 			stopWatch.start();
 			goToTestPage(driver);
 			stopWatch.stop("TestPage", String.format(message1, j,times));
